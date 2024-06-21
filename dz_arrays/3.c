@@ -3,7 +3,7 @@
 
 int main() {
     int n;
-    printf("Введите размер матрицы: ");
+    printf("Size of the matrix: ");
     scanf("%d", &n);
     
     int matrix[n][n];
