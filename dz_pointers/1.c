@@ -1,44 +1,19 @@
 #include <stdio.h>
-#include <string.h>
-
-#define MAX_SIZE 100
-
-char find_substring(char str, char substr) {
-    int len1 = strlen(str);
-    int len2 = strlen(substr);
-    
-    for (int i = 0; i <= len1 - len2; i++) {
-        int j;
-        for (j = 0; j < len2; j++) {
-            if (str[i + j] != substr[j]) {
-                break;
-            }
-        }
-        if (j == len2) {
-            return &str[i];
-        }
-    }
-    
-    return NULL;
-}
+#include <stdlib.h>
 
 int main() {
-    char str[MAX_SIZE];
-    char substr[MAX_SIZE];
-    
-    printf("Enter a string: ");
-    gets(str);
-    
-    printf("Enter a substring to search for: ");
-    gets(substr);
-    
-    char result = find_substring(str, substr);
-    
-    if (result != NULL) {
-        printf("Substring found at index: %ldn", result - str);
-    } else {
-        printf("Substring not foundn");
-    }
-    
-    return 0;
+  int number;
+  int new_byte;
+  printf("Your num: ");
+  scanf("%d", &number);
+  printf("New byte: ");
+  scanf("%d", &new_byte);
+  int *ptr1;
+  ptr1= &number;
+  char * ptr2 = (char*)ptr1+2;
+
+  printf("%d\n", *ptr2);
+  *ptr2 = new_byte;
+  printf("%d\n", *ptr2);
+  printf("New num: %d\n", number);
 }

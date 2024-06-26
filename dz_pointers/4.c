@@ -5,7 +5,6 @@ char* findSubstring(char *str, char *sub) {
     int i, j;
     int len1 = strlen(str);
     int len2 = strlen(sub);
-
     for(i = 0; i <= len1 - len2; i++) {
         for(j = 0; j < len2; j++) {
             if(str[i + j] != sub[j]) {
@@ -24,14 +23,15 @@ int main() {
     char sub[100];
 
     printf("Enter the string: ");
-    scanf("%s", &str);
+    scanf("%s", str);
     printf("Enter the substring to search: ");
-    scanf("%s", &sub);
+    scanf("%s", sub);
     char *result = findSubstring(str, sub);
 
     if(result) {
         printf("The begining of substring: %s\n", result);
-    } else {
+    } 
+    else {
         printf("Substring has not been found\n");
     }
 
