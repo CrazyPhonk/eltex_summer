@@ -1,86 +1,35 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <sys/shm.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
+#include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 #include <unistd.h>
 
-#define SHMSIZE 256
+#define SHM_KEY 1234567
+#define SHM_SIZE 256
 
-int main(){
-    char * msgToCheck = "Hello!";
-    key_t key = ftok("server.c", 'A');
-    key_t keySem = ftok("server.c", 'B');
-    char * msg = "Hi!";
-    struct sembuf lock =  {{0,0,0},{0,1,0}};
-    struct sembuf unlock = {0,-1,0};
-    int sem_id;
-    char * msgToRecv = "asd";
-    sem_id = semget(keySem, 1, 0666 | IPC_CREAT);
-    if (sem_id == -1){
-        perror("semget");
-        exit(-1);
-    }
-    int shmid = shmget(key, SHMSIZE, 0666 | IPC_CREAT);
-    if (shmid == -1){
+int main() {
+    int shmid = shmget(SHM_KEY, SHM_SIZE, IPC_CREAT | 0666);
+    if (shmid == -1) {
         perror("shmget");
-        exit(-1);
+        exit(1);
     }
-    void * shmptr;
-    if (semop(sem_id, &lock, 1) == -1){
-        perror("semop");
-        exit(-1);
-    }
-    shmptr = shmat(shmid, NULL, O_RDWR);
-    if (shmptr == NULL){
+    char *shared_memory = (char *)shmat(shmid, NULL, 0);
+    if (shared_memory == (char *)-1) {
         perror("shmat");
-        exit(-1);
+        exit(1);
     }
-    memcpy(shmptr, msg, 4);
-    shmdt(shmptr);
-    if (semop(sem_id, &unlock, 1) == -1){
-        perror("semop2");
-        exit(-1);
+    strcpy(shared_memory, "Hi!");
+    while (strcmp(shared_memory, "Hello!") != 0) {
+        sleep(1);
     }
-    int a = 1;
-    while(a != 0){
-        int a = strcmp(msgToRecv, msgToCheck);
-    printf("%d\n", a);
-    if (a < 0){
-        perror("strcmp");
-        exit(-1);
-    }
-        if (semop(sem_id, &lock, 1) == -1){
-        perror("semop3");
-        exit(-1);
-    }
-        shmptr = shmat(shmid, NULL, O_RDWR);
-        if (shmptr == NULL){
-            perror("shmat2");
-            exit(-1);
-        }
-        msgToRecv = (char *)shmptr;
-        if (strcmp(msgToRecv, msgToCheck) != 0){
-            msgToRecv = "asd";
-        }
-        if (shmdt(shmptr) == -1){
-            perror("shmdt");
-            exit(-1);
-        }
-        if (semop(sem_id, &unlock, 1) == -1){
-        perror("semop4");
-        exit(-1);
-        }
-    }
-    printf("%s\n", msgToRecv);
-    if(semctl(sem_id, 1, IPC_RMID) == -1){
-        perror("semctl");
-        exit(-1);
+    printf("MSG from client: %s\n", shared_memory);
+    if (shmdt(shared_memory) == -1) {
+        perror("shmdt");
+        exit(1);
     }
     if (shmctl(shmid, IPC_RMID, NULL) == -1) {
         perror("shmctl");
-        exit(-1);
+        exit(1);
     }
 }
