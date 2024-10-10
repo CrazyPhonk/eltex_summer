@@ -10,8 +10,6 @@ int main(int argc, char *argv[]) {
     }
 
     pid_t receiver_pid = atoi(argv[1]);
-
-    // Отправка сигнала SIGUSR1
     if (kill(receiver_pid, SIGUSR1) == -1) {
         perror("Error to send sig");
         return 1;

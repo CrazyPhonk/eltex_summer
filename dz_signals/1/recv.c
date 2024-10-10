@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-// Функция-обработчик сигнала SIGUSR1
+
 void sigusr1_handler(int signum) {
     printf("Received SIGUSR1!\n");
 }
@@ -11,12 +11,10 @@ void sigusr1_handler(int signum) {
 int main() {
     struct sigaction sa;
 
-    // Struct sigaction
-    sa.sa_handler = sigusr1_handler; // signal handler
-    sigemptyset(&sa.sa_mask);       // do not block any signals
-    sa.sa_flags = 0;                // flags
+    sa.sa_handler = sigusr1_handler; 
+    sigemptyset(&sa.sa_mask);       
+    sa.sa_flags = 0;                
 
-    //redefine SIGUSR1
     if (sigaction(SIGUSR1, &sa, NULL) == -1) {
         perror("sigaction error");
         exit(EXIT_FAILURE);
@@ -25,7 +23,7 @@ int main() {
     printf("Recv prog is working! Waiting for SIGUSR1...\n");
 
     while (1) {
-        pause(); // pause to wait signal
+        pause();
     }
 
     return 0;
